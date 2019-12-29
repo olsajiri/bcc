@@ -369,7 +369,7 @@ class BPF(object):
 
         return fns
 
-    def load_func(self, func_name, prog_type, device = None):
+    def load_func(self, func_name, prog_type, device = None, expected_attach_type = None):
         func_name = _assert_is_bytes(func_name)
         if func_name in self.funcs:
             return self.funcs[func_name]
@@ -385,7 +385,7 @@ class BPF(object):
                 lib.bpf_function_size(self.module, func_name),
                 lib.bpf_module_license(self.module),
                 lib.bpf_module_kern_version(self.module),
-                log_level, None, 0, device);
+                log_level, None, 0, device, expected_attach_type);
 
         if fd < 0:
             atexit.register(self.donothing)

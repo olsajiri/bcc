@@ -72,7 +72,7 @@ int bcc_func_load(void *program, int prog_type, const char *name,
                   const struct bpf_insn *insns, int prog_len,
                   const char *license, unsigned kern_version,
                   int log_level, char *log_buf, unsigned log_buf_size,
-                  const char *dev_name);
+                  const char *dev_name, int expected_attach_type);
 
 #ifdef __cplusplus
 }
