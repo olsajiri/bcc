@@ -545,6 +545,16 @@ int bcc_prog_load_xattr(struct bpf_load_program_attr *attr, int prog_len,
       name_offset = 12;
     else if (strncmp(attr->name, "raw_tracepoint__", 16) == 0)
       name_offset = 16;
+    else if (strncmp(attr->name, "kfunc__", 7) == 0)
+      name_offset = 7;
+    else if (strncmp(attr->name, "kretfunc__", 10) == 0)
+      name_offset = 10;
+
+    if (attr->prog_type == BPF_PROG_TYPE_TRACING) {
+      attr->attach_btf_id = libbpf_find_vmlinux_btf_id(attr->name + name_offset,
+                                                       attr->expected_attach_type);
+    }
+
     memcpy(prog_name, attr->name + name_offset,
            min(name_len - name_offset, BPF_OBJ_NAME_LEN - 1));
     attr->name = prog_name;
@@ -1140,6 +1150,23 @@ int bpf_attach_raw_tracepoint(int progfd, const char *tp_name)
   ret = bpf_raw_tracepoint_open(tp_name, progfd);
   if (ret < 0)
     fprintf(stderr, "bpf_attach_raw_tracepoint (%s): %s\n", tp_name, strerror(errno));
+  return ret;
+}
+
+int bpf_dettach_kfunc(int prog_fd, char *func)
+{
+  UNUSED(prog_fd);
+  UNUSED(func);
+  return 0;
+}
+
+int bpf_attach_kfunc(int prog_fd)
+{
+  int ret;
+
+  ret = bpf_raw_tracepoint_open(NULL, prog_fd);
+  if (ret < 0)
+    fprintf(stderr, "bpf_attach_raw_tracepoint (kfunc): %s\n", strerror(errno));
   return ret;
 }
 
